@@ -1,0 +1,7 @@
+{
+  "name": "FemHealth Tracker",
+  "description": "A comprehensive menstrual health tracking application featuring cycle prediction, health assessments, doctor consultation finder, and an AI-powered health assistant.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
