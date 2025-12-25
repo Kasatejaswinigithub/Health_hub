@@ -1,15 +1,16 @@
+
 import React, { useState } from 'react';
 import { QuizQuestion } from '../types';
-import { CheckCircle, AlertTriangle, PlayCircle, RefreshCw } from 'lucide-react';
+import { CheckCircle, RefreshCw, ChevronRight, AlertCircle, Sparkles } from 'lucide-react';
 
 const QUESTIONS: QuizQuestion[] = [
-  { id: 1, text: "Do you have a brownish discharge before your period starts?" },
-  { id: 2, text: "Do your menstrual periods occur regularly?" },
-  { id: 3, text: "Do you use tobacco products?" },
-  { id: 4, text: "Do you experience severe pain with your period?" },
-  { id: 5, text: "Do you experience extreme bloating during your periods?" },
-  { id: 6, text: "Do you feel unusually lethargic or fatigued?" },
-  { id: 7, text: "Have you experienced sudden weight changes recently?" }
+  { id: 1, text: "Do you experience brownish discharge before your cycle starts?" },
+  { id: 2, text: "Are your menstrual periods generally regular (every 21-35 days)?" },
+  { id: 3, text: "Do you experience severe, debilitating pain during your period?" },
+  { id: 4, text: "Do you notice extreme bloating or digestive issues during your cycle?" },
+  { id: 5, text: "Do you feel unusually lethargic, fatigued, or 'brain fogged'?" },
+  { id: 6, text: "Have you noticed any sudden, unexplained weight changes recently?" },
+  { id: 7, text: "Do you experience significant mood swings or emotional sensitivity?" }
 ];
 
 interface HealthTestProps {
@@ -23,10 +24,7 @@ export const HealthTest: React.FC<HealthTestProps> = ({onNavigateToDoctor, onNav
   const [isFinished, setIsFinished] = useState(false);
 
   const handleAnswer = (answer: 'yes' | 'no') => {
-    if (answer === 'yes') {
-      setYesCount(prev => prev + 1);
-    }
-
+    if (answer === 'yes') setYesCount(prev => prev + 1);
     if (currentIndex < QUESTIONS.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
@@ -43,80 +41,101 @@ export const HealthTest: React.FC<HealthTestProps> = ({onNavigateToDoctor, onNav
   if (isFinished) {
     let resultMessage = "";
     let resultColor = "";
-    let ActionComponent = null;
+    let resultIcon = null;
 
     if (yesCount > 4) {
-      resultMessage = "You have reported several symptoms. It might be beneficial to consult a specialist.";
-      resultColor = "text-red-600 bg-red-50 border-red-200";
-      ActionComponent = (
-        <button onClick={onNavigateToDoctor} className="mt-4 px-6 py-2 bg-rose-600 text-white rounded-full hover:bg-rose-700 transition">
-            Find a Doctor
-        </button>
-      );
+      resultMessage = "Your symptoms suggest you might benefit from a clinical consultation to rule out any underlying hormonal imbalances.";
+      resultColor = "bg-rose-50 border-rose-200 text-rose-900";
+      resultIcon = <AlertCircle className="text-rose-500 w-12 h-12 mb-4" />;
     } else if (yesCount > 2) {
-      resultMessage = "You have some symptoms. Take care of your diet and rest well. Monitor your health.";
-      resultColor = "text-yellow-700 bg-yellow-50 border-yellow-200";
-      ActionComponent = (
-        <div className="mt-2 text-sm text-gray-600">Check the 'Care' section for tips!</div>
-      );
+      resultMessage = "You're experiencing some standard symptoms. Monitoring your diet and prioritizing rest could help improve your comfort.";
+      resultColor = "bg-yellow-50 border-yellow-200 text-yellow-900";
+      resultIcon = <Sparkles className="text-yellow-500 w-12 h-12 mb-4" />;
     } else {
-      resultMessage = "You seem to be doing well! Keep maintaining a healthy lifestyle.";
-      resultColor = "text-green-700 bg-green-50 border-green-200";
-      ActionComponent = (
-        <button onClick={onNavigateToFun} className="mt-4 px-6 py-2 bg-purple-500 text-white rounded-full hover:bg-purple-600 transition">
-            Relax in Fun Zone
-        </button>
-      );
+      resultMessage = "Your health profile looks great! Keep maintaining your current wellness routine.";
+      resultColor = "bg-green-50 border-green-200 text-green-900";
+      resultIcon = <CheckCircle className="text-green-500 w-12 h-12 mb-4" />;
     }
 
     return (
-      <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-xl p-8 text-center animate-fade-in">
-        <h2 className="text-3xl font-bold mb-6">Test Results</h2>
-        <div className={`p-6 rounded-xl border ${resultColor} mb-6`}>
-            <p className="text-lg font-medium">{resultMessage}</p>
+      <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-xl p-10 text-center animate-fade-in border border-rose-50">
+        <div className="flex flex-col items-center mb-6">
+          {resultIcon}
+          <h2 className="text-3xl font-black text-slate-800">Your Health Report</h2>
         </div>
-        <p className="text-gray-500 mb-8">You answered "Yes" to {yesCount} out of {QUESTIONS.length} questions.</p>
         
-        <div className="flex flex-col items-center gap-4">
-            {ActionComponent}
-            <button onClick={resetQuiz} className="flex items-center text-gray-500 hover:text-rose-500 mt-4">
-                <RefreshCw size={16} className="mr-2" /> Retake Test
+        <div className={`p-8 rounded-2xl border ${resultColor} mb-8 shadow-inner`}>
+            <p className="text-lg font-medium leading-relaxed">{resultMessage}</p>
+        </div>
+        
+        <p className="text-gray-400 mb-10 text-sm">
+          You responded "Yes" to {yesCount} out of {QUESTIONS.length} wellness indicators.
+        </p>
+        
+        <div className="flex flex-col gap-4">
+            {yesCount > 4 ? (
+              <button 
+                onClick={onNavigateToDoctor} 
+                className="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-rose-200 flex items-center justify-center gap-2"
+              >
+                Find a Specialist Near You <ChevronRight size={20} />
+              </button>
+            ) : (
+              <button 
+                onClick={onNavigateToFun} 
+                className="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-purple-200 flex items-center justify-center gap-2"
+              >
+                Explore the Fun Zone <Sparkles size={20} />
+              </button>
+            )}
+            
+            <button onClick={resetQuiz} className="flex items-center justify-center text-gray-400 hover:text-rose-500 transition-colors font-medium">
+                <RefreshCw size={18} className="mr-2" /> Retake Symptom Test
             </button>
         </div>
       </div>
     );
   }
 
-  const currentQuestion = QUESTIONS[currentIndex];
-
   return (
-    <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-xl p-10 min-h-[400px] flex flex-col justify-center animate-fade-in border border-rose-50">
-      <div className="mb-8">
-        <span className="text-xs font-bold tracking-wider text-rose-500 uppercase">Question {currentIndex + 1} of {QUESTIONS.length}</span>
-        <div className="w-full bg-gray-100 h-2 rounded-full mt-2">
+    <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl p-10 min-h-[500px] flex flex-col justify-between animate-fade-in border border-rose-100">
+      <div className="space-y-6">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <span className="text-rose-500 font-bold tracking-widest uppercase text-xs">Symptom Checker</span>
+            <h2 className="text-2xl font-black text-slate-800">Wellness Assessment</h2>
+          </div>
+          <div className="bg-rose-50 px-4 py-2 rounded-2xl text-rose-500 font-bold text-sm">
+            {currentIndex + 1} / {QUESTIONS.length}
+          </div>
+        </div>
+        
+        <div className="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
             <div 
-                className="bg-rose-500 h-2 rounded-full transition-all duration-300" 
+                className="bg-rose-500 h-full transition-all duration-700 ease-out shadow-lg" 
                 style={{ width: `${((currentIndex + 1) / QUESTIONS.length) * 100}%` }}
             ></div>
         </div>
+        
+        <div className="py-12">
+          <h3 className="text-3xl font-bold text-slate-800 leading-tight">
+            {QUESTIONS[currentIndex].text}
+          </h3>
+        </div>
       </div>
-      
-      <h3 className="text-2xl font-semibold text-gray-800 mb-10 leading-relaxed">
-        {currentQuestion.text}
-      </h3>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <button
           onClick={() => handleAnswer('yes')}
-          className="py-4 rounded-xl border-2 border-rose-100 hover:border-rose-500 hover:bg-rose-50 text-rose-700 font-semibold transition-all duration-200 flex items-center justify-center gap-2 group"
+          className="group relative bg-rose-500 hover:bg-rose-600 text-white py-6 rounded-2xl font-black transition-all shadow-xl shadow-rose-200 hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2"
         >
-          <CheckCircle className="group-hover:scale-110 transition-transform" /> Yes
+          <CheckCircle className="opacity-70 group-hover:scale-125 transition-transform" /> Yes, Frequently
         </button>
         <button
           onClick={() => handleAnswer('no')}
-          className="py-4 rounded-xl border-2 border-gray-100 hover:border-gray-400 hover:bg-gray-50 text-gray-700 font-semibold transition-all duration-200 flex items-center justify-center gap-2"
+          className="bg-slate-100 hover:bg-slate-200 text-slate-600 py-6 rounded-2xl font-bold transition-all border-2 border-transparent hover:border-slate-300 active:scale-95"
         >
-          No
+          No, Not Really
         </button>
       </div>
     </div>
